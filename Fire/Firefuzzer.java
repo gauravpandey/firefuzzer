@@ -5,7 +5,7 @@ package Fire;
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
+import java.util.*;
 
 
 
@@ -27,7 +27,7 @@ public class Firefuzzer {
 		this ( new URL(aUrlName) );
 	}
 
-	public String getPageContent() {
+	public String getPageContent() throws IOException{
 		String result = null;
 	    URLConnection connection = null;
 	    try {
@@ -42,11 +42,13 @@ public class Firefuzzer {
 	    return result;
 	}
 
-	private static void log(Object aObject) {
-		System.out.println(aObject);
+	private static void log(Object aObject) throws IOException{
+		//System.out.println(aObject);
+		FileWriter fw = new FileWriter("Fire/page.txt",true);
+		fw.append(aObject.toString());
 	}
 	  
-	public static void main(String []args) throws MalformedURLException {
+	public static void main(String []args) throws IOException,MalformedURLException {
 		String url = args[0];
 		Firefuzzer fetcher = new  Firefuzzer(url);
 		log( fetcher.getPageContent() );
