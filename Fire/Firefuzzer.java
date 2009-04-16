@@ -44,8 +44,9 @@ public class Firefuzzer {
 
 	private static void log(Object aObject) throws IOException{
 		//System.out.println(aObject);
-		FileWriter fw = new FileWriter("Hero/test.html",true);
+		FileWriter fw = new FileWriter("Hero/hello.o",true);
 		fw.append(aObject.toString());
+		fw.close();
 	}
 	  
 	public static void main(String []args) throws IOException,MalformedURLException {
