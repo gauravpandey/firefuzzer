@@ -13,27 +13,6 @@ import java.util.Scanner;
  * @author gaurav
  *
  */
-/*public class Firefuzzer {
-	public static void main(String[] args) {
-		try {
-			String page = "";
-			URL address = new URL("http://register.rediff.com/register/register.php?FormName=user_details");
-			address.
-			page = page+(new DataInputStream(address.openStream())).readUTF(); 
-			System.out.println(page);
-		}
-		
-		catch (MalformedURLException murle) {
-			System.err.println("MalformedURLException Error: "+murle.getMessage());
-		}
-		
-		catch (IOException ioe) {
-			System.err.println("IOException Error: "+ioe.getMessage());
-		}
-	}
-
-}*/
-
 public class Firefuzzer {
 	private URL fURL;
 
