@@ -44,7 +44,7 @@ public class Firefuzzer {
 
 	private static void log(Object aObject) throws IOException{
 		//System.out.println(aObject);
-		FileWriter fw = new FileWriter("Fire/temp.txt",true);
+		FileWriter fw = new FileWriter("Hero/test.html",true);
 		fw.append(aObject.toString());
 	}
 	  
