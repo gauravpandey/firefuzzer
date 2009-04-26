@@ -53,83 +53,7 @@ public class Firefuzzer {
 		fw.close();
 	}
 	
-	/*private static void readFile() {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("page.html"));
-			String s = "",t="";
-			int lineCount = 0;
-			while((s=br.readLine())!=null) {
-				lineCount++;
-				if(!s.isEmpty()) {
-					if(s.contains("<input")) {
-						StringTokenizer str = new StringTokenizer(s);
-						while(str.hasMoreTokens()) {
-							if(str.nextToken().contains("<input ")) {
-								while(str.hasMoreTokens()) {
-									String curr = "";
-									curr = str.nextToken();
-									if(curr.equals("type=\"text\"")) {
-										flag = true;
-									}
-									else if(curr.contains(">")) {
-										break;
-									}
-								}
-							}
-						}
-						vecStr.add(lineCount+"#"+s);
-					}
-				}
-			}
-		}
-		catch(FileNotFoundException fnfe) {
-			System.err.println("Exception error: "+fnfe.getMessage());
-		}
-		catch(IOException ioe) {
-			System.err.println("Exception error: "+ioe.getMessage());
-		}
-	}
-	
-	public static void readVec() {
-		int veclen = vecStr.size();
-		for(int i=0;i<veclen;i++) {
-			System.out.println(vecStr.get(i));
-		}
-	}
-	
-	public static void randomCall() {
-		Random randgen = new Random();
-		int length = vecStr.size();
-		int selection = randgen.nextInt(length);
-		String chosenString = vecStr.get(selection);
-		System.out.println("CHOSEN ONE: "+chosenString);
-		StringTokenizer str1 = new StringTokenizer(chosenString);
-		while(str1.hasMoreTokens()) {
-			String currString = str1.nextToken();
-			if(currString.contains("<input")) {
-				while(str1.hasMoreTokens()) {
-					currString = str1.nextToken();
-					if(!currString.contains(">")) {
-						if(currString.contains("value=")) {
-							
-							flag = true;							
-						}
-					}
-					else {
-						break;
-					}
-				}
-			}
-			if(currString.contains("value=")) {
-				flag = true;
-			}
-			if(flag==true) {
-				break;
-			}
-		}
-	}*/
-	
-	private static void read() {
+	private static void readFile() {
 		try {
 			Scanner scan = new Scanner(new File("page.loaded"));
 			while(scan.hasNext()) {
@@ -146,13 +70,7 @@ public class Firefuzzer {
 		String url = args[0];  
 		Firefuzzer fetcher = new  Firefuzzer(url);
 		log( fetcher.getPageContent() );
-		/*readFile();
-		readVec();
-		randomCall();*/
-		//System.out.println(flag);
-		//if(flag) {
-		
-		read();
+		readFile();
 			
 		}
 	}
