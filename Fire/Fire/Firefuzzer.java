@@ -46,6 +46,11 @@ public class Firefuzzer {
 	}
 
 	private static void log(Object aObject) throws IOException {
+		File f = new File("page.loaded");
+		if (f.exists()) {
+			f.delete();
+			f.createNewFile();
+		}
 		FileWriter fw = new FileWriter("page.loaded",true);
 		fw.append(aObject.toString());
 		fw.close();
@@ -54,6 +59,11 @@ public class Firefuzzer {
 	private static void streamline() {
 		try {
 			Scanner scan = new Scanner(new FileReader("page.loaded"));
+			File f = new File("temp.loaded");
+			if (f.exists()) {
+				f.delete();
+				f.createNewFile();
+			}
 			PrintWriter pw = new PrintWriter("temp.loaded");
 			String str = "",temp = "";
 			while(scan.hasNext()) {
@@ -102,10 +112,15 @@ public class Firefuzzer {
 	
 	private static void patternchecker() throws IOException {
 		Scanner scan = new Scanner(new FileReader("temp.loaded"));
+		File f = new File("value.loaded");
+		if (f.exists()) {
+			f.delete();
+			f.createNewFile();
+		}
 		PrintWriter pw = new PrintWriter("value.loaded");
 		while(scan.hasNextLine()) {
-			String strLine = scan.nextLine();
-			if((strLine.contains("type=\"text\"") | strLine.contains("type=\"password\"") | strLine.contains("type=\"hidden\"")) & strLine.contains("<input") & strLine.contains(">")) {
+			String strLine = scan.nextLine().toLowerCase();
+			if((strLine.contains("type=\"text\"") | strLine.contains("type=text") | strLine.contains("type=\"password\"") | strLine.contains("type=password") | strLine.contains("type=\"hidden\"") | strLine.contains("type=hidden")) & strLine.contains("<input") & strLine.contains(">")) {
 				StringTokenizer strToken = new StringTokenizer(strLine);
 				String strLineToken = "",temp = "";
 				while(strToken.hasMoreTokens()) {
@@ -136,15 +151,15 @@ public class Firefuzzer {
 							String[] tempStr = temp.split(" ");
 							int last = tempStr.length-1;
 						
-							pattern = "/>";  /*either > or /> ..not sure*/
+							pattern = "/>";  //either > or /> ..not sure
 							String replace = " value=\"hello\"/>";
 							p = Pattern.compile(pattern);
 							m = p.matcher(tempStr[last]);
 							tempStr[last]=m.replaceFirst(replace);
-							/*temp="";*/
+							temp="";
 							for(int i=0;i<tempStr.length;i++)
 								temp = temp+tempStr[i]+" ";
-							System.out.println("REPLACED:"+temp);
+							System.out.println("REPLACED1:"+temp);
 							//pw.println(temp);
 							//pw.flush();
 							//System.out.println("REPLACED: "+);
@@ -158,10 +173,10 @@ public class Firefuzzer {
 							p = Pattern.compile(pattern);
 							m = p.matcher(tempStr[last]);
 							tempStr[last]=m.replaceFirst(replace);
-							/*temp="";*/
+							temp="";
 							for(int i=0;i<tempStr.length;i++)
 								temp = temp+tempStr[i]+" ";
-							System.out.println("REPLACED:"+temp);
+							System.out.println("REPLACED2:"+temp);
 							//pw.println(temp);
 							//pw.flush();
 							//System.out.println("REPLACED: "+);
@@ -191,9 +206,9 @@ public class Firefuzzer {
 	}
 		  
 	public static void main(String []args) throws IOException,MalformedURLException {
-		String url = args[0];  
-		Firefuzzer fetcher = new  Firefuzzer(url);
-		log( fetcher.getPageContent() );
+		//String url = args[0];  
+		//Firefuzzer fetcher = new  Firefuzzer(url);
+		//log( fetcher.getPageContent() );
 		streamline();
 		patternchecker();
 		//readTemp();
