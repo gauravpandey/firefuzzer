@@ -3,6 +3,7 @@
  */
 package Fire;
 
+import net.htmlparser.jericho.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -56,7 +57,7 @@ public class Firefuzzer {
 		fw.close();
 	}
 	
-	private static void streamline() {
+	/*private static void streamline() {
 		try {
 			Scanner scan = new Scanner(new FileReader("page.loaded"));
 			File f = new File("temp.loaded");
@@ -110,6 +111,20 @@ public class Firefuzzer {
 		}
 	}
 	
+	 private static int processWordCount(String data,String pat) {
+		Scanner s = new Scanner(data);
+		s.useDelimiter(pat);
+		System.out.println("data: "+data);
+		Pattern p = Pattern.compile(pat);
+		String words = null;
+		int count = 0;
+		while (s.hasNext()) {
+			s.next();
+			count += 1;
+		}
+		return count;
+	 }
+	
 	private static void patternchecker() throws IOException {
 		Scanner scan = new Scanner(new FileReader("temp.loaded"));
 		File f = new File("value.loaded");
@@ -118,19 +133,29 @@ public class Firefuzzer {
 			f.createNewFile();
 		}
 		PrintWriter pw = new PrintWriter("value.loaded");
+		Boolean flag = false;
 		while(scan.hasNextLine()) {
 			String strLine = scan.nextLine().toLowerCase();
 			if((strLine.contains("type=\"text\"") | strLine.contains("type=text") | strLine.contains("type=\"password\"") | strLine.contains("type=password") | strLine.contains("type=\"hidden\"") | strLine.contains("type=hidden")) & strLine.contains("<input") & strLine.contains(">")) {
 				StringTokenizer strToken = new StringTokenizer(strLine);
 				String strLineToken = "",temp = "";
+				int counter=0;
 				while(strToken.hasMoreTokens()) {
 					strLineToken = strToken.nextToken();
-					if(strLineToken.contains("<input")) {
+					if(strLineToken.contains("<input") | flag==true) {
 						temp=temp+strLineToken+" ";
 						while(strToken.hasMoreTokens()) {
 							strLineToken = strToken.nextToken();
 							if(strLineToken.contains(">")) {
 								temp=temp+strLineToken+" ";
+								if(strLineToken.contains("<input")) {
+									flag=true;
+									counter++;
+								}
+								else {
+									flag = false;
+									counter=0;
+								}
 								break;
 							}
 							else {
@@ -142,6 +167,7 @@ public class Firefuzzer {
 						Pattern p = Pattern.compile(pattern);
 						Pattern p1 = Pattern.compile(pattern1);
 						Matcher m = p.matcher(temp);
+						System.out.println("Counter: "+processWordCount(temp, "value"));
 						if(m.find()) {
 							System.out.println("MATCH: "+temp);
 							//pw.println(temp);
@@ -168,7 +194,7 @@ public class Firefuzzer {
 							String[] tempStr = temp.split(" ");
 							int last = tempStr.length-1;
 							
-							pattern = ">";  /*either > or /> ..not sure*/
+							pattern = ">";  either > or /> ..not sure
 							String replace = " value=\"hello\"/>";
 							p = Pattern.compile(pattern);
 							m = p.matcher(tempStr[last]);
@@ -203,14 +229,125 @@ public class Firefuzzer {
 		while((s=br.readLine())!=null) {
 			System.out.println(s);
 		}
+	}*/
+	
+	private static void parseInput() {
+		Source source = null;
+		try {
+		source = new Source(new FileReader("page.loaded"));
+		}
+		catch (FileNotFoundException fnfe) {
+			System.err.println("File not found. Error: "+fnfe.getMessage());
+		}
+		catch (IOException ioe) {
+			System.err.println("IOException occurred. Error: "+ioe.getMessage());
+		}
+		System.out.println("Input Tags: ");
+		List<StartTag> segments = source.getAllStartTags(HTMLElementName.INPUT);
+		OutputDocument outputDocument=new OutputDocument(source);
+		String str = "",pattern = "",temp = "";
+		String[] tempStr = null;
+		for (StartTag startTag : segments) {
+			str = "";
+			temp="";
+		    //StartTag startTag = (StartTag)i.next();
+		    Attributes attributes=startTag.getAttributes();
+		    String rel=attributes.getValue("type");
+		    if(rel.equals("text") | rel.equals("hidden") | rel.equals("password")) {
+		    	//System.out.println(startTag);
+		    	str = startTag.toString();
+		    	if(str.contains("value")) {
+		    		//System.out.println("valueeeeeeeeeee: "+attributes.getValue("value"));
+		    		String atrString = attributes.toString();
+		    		StringTokenizer strAtr = new StringTokenizer(atrString);
+		    		String strtag = "<input ";
+		    		while(strAtr.hasMoreTokens()) {
+		    			String strA = strAtr.nextToken();
+		    			if(!strA.contains("value")) {
+		    				strtag = strtag+strA+" ";
+		    			}
+		    		}
+		    		Random randgen = new Random();
+		    		//String token1 = Double.toString(Math.abs(randgen.nextDouble()));
+		    		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
+		    	 	StringBuffer sb=new StringBuffer();
+		    	 	Random r = new Random();
+		    	 	int te=0;
+		    	 	for(int i=1;i<=300;i++){
+		    	 		te=r.nextInt(62);
+		    	 		sb.append(str1.charAt(te));
+		    	 	}
+		    	 	String token1 = sb.toString();
+		    	 	//System.out.println("STRING: "+token1);
+		    		strtag=strtag+"value=\""+token1+"\"/>";
+		    		//System.out.println(attributes.getValue("value"));
+		    		//System.out.println("O: "+str);
+		    		temp=strtag;
+		    	}
+		    	else {
+		    		pattern = "/>";
+					Pattern p = Pattern.compile(pattern);
+					Matcher m = null;
+					if(p.matcher(str).find()) {
+						tempStr = str.split(" ");
+						int last = tempStr.length-1;
+					
+						pattern = "/>";  //either > or /> ..not sure
+						String replace = " value=\"hello\"/>";
+						p = Pattern.compile(pattern);
+						m = p.matcher(tempStr[last]);
+						tempStr[last]=m.replaceFirst(replace);
+						temp="";
+						for(int j=0;j<tempStr.length;j++)
+							temp = temp+tempStr[j]+" ";
+						//System.out.println("REPLACED1:"+temp);
+					}
+					else {
+						tempStr = str.split(" ");
+						int last = tempStr.length-1;
+						
+						pattern = ">";  //either > or /> ..not sure
+						String replace = " value=\"hello\"/>";
+						p = Pattern.compile(pattern);
+						m = p.matcher(tempStr[last]);
+						tempStr[last]=m.replaceFirst(replace);
+						temp="";
+						for(int j=0;j<tempStr.length;j++)
+							temp = temp+tempStr[j]+" ";
+						//System.out.println("REPLACED2:"+temp);
+					}
+		    	}
+		    	//System.out.println("out: "+temp);
+			    System.out.println("1: "+startTag);
+			    System.out.println("2: "+temp);
+			    outputDocument.replace(startTag,temp);
+		    }
+		  }
+		try {
+			outputDocument.writeTo(new FileWriter("temp.html"));
+			//outputDocument.writeTo(new OutputStreamWriter(System.out));
+		}
+		catch (IOException ioe) {
+			System.err.println("IOException error: "+ioe.getMessage());
+		}
+
+		/*for(Segment segment : segments) {
+			System.out.println(segment);
+		}*/
 	}
 		  
 	public static void main(String []args) throws IOException,MalformedURLException {
 		//String url = args[0];  
 		//Firefuzzer fetcher = new  Firefuzzer(url);
 		//log( fetcher.getPageContent() );
-		streamline();
-		patternchecker();
+		/*streamline();
+		patternchecker();*/
 		//readTemp();
+		parseInput();
+		//Process p = new ProcessBuilder("firefox", "temp.html").start();
+		
+		ClientHttpRequest chr = new ClientHttpRequest();
+		
+		
 		}
 	}
