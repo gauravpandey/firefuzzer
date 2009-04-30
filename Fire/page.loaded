@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Freedback</title>
+		<!--[if gte IE 7]>
+			<link rel="stylesheet" type="text/css" media="screen" href="/sys/css/ie7.css" />
+	<![endif]-->
+		<script type="text/javascript" src="/sys/js/events.js"></script>
+<script type="text/javascript" src="/sys/js/prototype.js"></script>
+<script type="text/javascript" src="/sys/js/scriptaculous.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/sys/css/theme_freedback.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/sys/css/baseform.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/sys/css/style.css" />
+</head>
+<body>
+	<div id="header">
+				<ul class="nav_account">
+							<li><a href="http://www.freedback.com">Home</a></li>
+							<li><a href="http://www.freedback.com/contact.php">Contact</a></li>
+					</ul>
+		<a href="/sys/form"><img alt="Freedback Logo" src="/sys/images/header/freedback_logo.gif" /></a>
+	</div>
+	
+		
+	<div id="page">
+		<div></div>
+					
+					<h1 class="page_title">Sign Up</h1>
+		
+		<div id="content">
+	<form class="baseform tight" method="post" action="www.freedback.com/sys/user/processsignup/">	<fieldset>
+		<legend>Sign Up</legend>
+		<table cellpadding="0" cellspacing="0" border="0">
+						<tr>
+				<th><h3 class="header_form">Create a Freedback Account</h3></th>
+			</tr><tr>
+				<th><label for="name">Name</label></th>
+			</tr><tr>
+				<td><input value="gaurav" type="text" name="name" id="name" value="" maxlength="255" class="name" /></td>
+			</tr><tr>
+				<th><label for="email">Email</label></th>
+			</tr><tr>
+				<td><input type="text" name="email" id="email" value="" maxlength="255" class="email" /></td>
+			</tr><tr>				
+				<th><label for="password">Password</label></th>
+			</tr><tr>
+				<td><input type="password" name="password" id="password" value="" maxlength="255" class="password" /></td>
+			</tr><tr>
+				<th><label for="password2">Confirm Password</label></th>
+			</tr><tr>
+				<td><input type="password" name="password2" id="password2" value="" maxlength="255" class="password" /></td>
+			</tr>
+					<tr>
+				<td class="buttons">
+					<input id="submit" type="submit" value="Sign Up"/>
+					<a class="cancel_link" href="http://www.freedback.com">Cancel</a>				</td>
+			</tr>
+		</table>
+	</fieldset>
+</form></div>
+
+	</div>
+</body>
+</html>

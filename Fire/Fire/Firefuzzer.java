@@ -19,6 +19,8 @@ public class Firefuzzer {
 	private static int count = 0;
 	private static Vector<String> vecStr = new Vector<String>();
 	private static Boolean flag = false;
+	private static String var;
+	private static String gurl;
 
 	public Firefuzzer(URL aURL) {
 		if ( ! "http".equals(aURL.getProtocol())  ) {
@@ -230,8 +232,54 @@ public class Firefuzzer {
 			System.out.println(s);
 		}
 	}*/
+	private static void sendBack(String data) throws MalformedURLException,IOException
+	{
+		
+		URLConnection urlConn = (new URL(var)).openConnection();
+		
+        if (urlConn instanceof HttpURLConnection) {
+            HttpURLConnection httpConn = (HttpURLConnection) urlConn;
+            httpConn.setDoInput(true);
+            httpConn.setDoOutput(true);
+            httpConn.setRequestMethod("POST");
+            //String data = "sumeetjindal";
+           /* 
+            String data = URLEncoder.encode("name", "UTF-8") + "=" +
+                    URLEncoder.encode("sumeet jindal", "UTF-8");
+            */
+            OutputStreamWriter writer = new OutputStreamWriter(httpConn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            try {
+                System.out.println("LOGIN RESPONSE: " + httpConn.getResponseCode());
+                System.out.println(httpConn.getResponseMessage());
+                try {
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+                
+                String line;
+                PrintWriter pw = new PrintWriter("temp.html");
+                while ((line = buffer.readLine()) != null) {
+                    System.out.println(line);
+                    pw.println(line);
+                }
+                writer.close();
+                buffer.close();
+                }
+                catch(IOException e) {
+                	System.err.println("ioexception");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+		
+		
+		
+		
+	}
 	
-	private static void parseInput() {
+	private static void parseInput() throws IOException{
 		Source source = null;
 		try {
 		source = new Source(new FileReader("page.loaded"));
@@ -242,112 +290,179 @@ public class Firefuzzer {
 		catch (IOException ioe) {
 			System.err.println("IOException occurred. Error: "+ioe.getMessage());
 		}
+		
+		//List<StartTag> segments = source.getAllStartTags(HTMLElementName.INPUT);
+		//sumeet
+		List<StartTag> branches=source.getAllStartTags(HTMLElementName.FORM);
+		System.out.println("FORM Tags: ");
+		System.out.println(branches.toString());
 		System.out.println("Input Tags: ");
-		List<StartTag> segments = source.getAllStartTags(HTMLElementName.INPUT);
 		OutputDocument outputDocument=new OutputDocument(source);
-		String str = "",pattern = "",temp = "";
-		String[] tempStr = null;
-		for (StartTag startTag : segments) {
-			str = "";
-			temp="";
-		    //StartTag startTag = (StartTag)i.next();
-		    Attributes attributes=startTag.getAttributes();
-		    String rel=attributes.getValue("type");
-		    if(rel.equals("text") | rel.equals("hidden") | rel.equals("password")) {
-		    	//System.out.println(startTag);
-		    	str = startTag.toString();
-		    	if(str.contains("value")) {
-		    		//System.out.println("valueeeeeeeeeee: "+attributes.getValue("value"));
-		    		String atrString = attributes.toString();
-		    		StringTokenizer strAtr = new StringTokenizer(atrString);
-		    		String strtag = "<input ";
-		    		while(strAtr.hasMoreTokens()) {
-		    			String strA = strAtr.nextToken();
-		    			if(!strA.contains("value")) {
-		    				strtag = strtag+strA+" ";
-		    			}
-		    		}
-		    		Random randgen = new Random();
-		    		//String token1 = Double.toString(Math.abs(randgen.nextDouble()));
-		    		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
-		    	 	StringBuffer sb=new StringBuffer();
-		    	 	Random r = new Random();
-		    	 	int te=0;
-		    	 	for(int i=1;i<=300;i++){
-		    	 		te=r.nextInt(62);
-		    	 		sb.append(str1.charAt(te));
-		    	 	}
-		    	 	String token1 = sb.toString();
-		    	 	//System.out.println("STRING: "+token1);
-		    		strtag=strtag+"value=\""+token1+"\"/>";
-		    		//System.out.println(attributes.getValue("value"));
-		    		//System.out.println("O: "+str);
-		    		temp=strtag;
-		    	}
-		    	else {
-		    		pattern = "/>";
-					Pattern p = Pattern.compile(pattern);
-					Matcher m = null;
-					if(p.matcher(str).find()) {
-						tempStr = str.split(" ");
-						int last = tempStr.length-1;
-					
-						pattern = "/>";  //either > or /> ..not sure
-						String replace = " value=\"hello\"/>";
-						p = Pattern.compile(pattern);
-						m = p.matcher(tempStr[last]);
-						tempStr[last]=m.replaceFirst(replace);
-						temp="";
-						for(int j=0;j<tempStr.length;j++)
-							temp = temp+tempStr[j]+" ";
-						//System.out.println("REPLACED1:"+temp);
-					}
-					else {
-						tempStr = str.split(" ");
-						int last = tempStr.length-1;
+		
+		for(StartTag sj:branches)
+		{
+			Attributes attr=sj.getAttributes();
+			String data="";
+			//gaurav
+			List<StartTag> segments = sj.getElement().getAllStartTags(HTMLElementName.INPUT);
+                 			
+			String str = "",pattern = "",temp = "";
+			String[] tempStr = null;
+			for (StartTag startTag : segments) {
+				str = "";
+				temp="";
+				
+			    //StartTag startTag = (StartTag)i.next();
+			    Attributes attributes=startTag.getAttributes();
+			    
+			    String rel=attributes.getValue("type");
+			    if(rel==null)
+			    	continue;
+			    if(rel.equalsIgnoreCase("text") | rel.equalsIgnoreCase("hidden") | rel.equalsIgnoreCase("password")) {
+			    	
+			    	//System.out.println(startTag);
+			    	str = startTag.toString();
+			    	if(str.contains("value")) {
+			    		//System.out.println("valueeeeeeeeeee: "+attributes.getValue("value"));
+			    		String atrString = attributes.toString();
+			    		StringTokenizer strAtr = new StringTokenizer(atrString);
+			    		String strtag = "<input ";
+			    		while(strAtr.hasMoreTokens()) {
+			    			String strA = strAtr.nextToken();
+			    			if(!strA.contains("value")) {
+			    				strtag = strtag+strA+" ";
+			    			}
+			    		}
+			    		Random randgen = new Random();
+			    		//String token1 = Double.toString(Math.abs(randgen.nextDouble()));
+			    		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
+			    	 	StringBuffer sb=new StringBuffer();
+			    	 	Random r = new Random();
+			    	 	int te=0;
+			    	 	for(int i=1;i<=300;i++){
+			    	 		te=r.nextInt(62);
+			    	 		sb.append(str1.charAt(te));
+			    	 	}
+			    	 	String token1 = sb.toString();
+			    	 	//System.out.println("STRING: "+token1);
+			    		strtag=strtag+"value=\""+token1+"\"/>";
+			    		//System.out.println(attributes.getValue("value"));
+			    		//System.out.println("O: "+str);
+			    		temp=strtag;
+			    	}
+			    	else {
+			    		pattern = "/>";
+						Pattern p = Pattern.compile(pattern);
+						Matcher m = null;
+						if(p.matcher(str).find()) {
+							tempStr = str.split(" ");
+							int last = tempStr.length-1;
 						
-						pattern = ">";  //either > or /> ..not sure
-						String replace = " value=\"hello\"/>";
-						p = Pattern.compile(pattern);
-						m = p.matcher(tempStr[last]);
-						tempStr[last]=m.replaceFirst(replace);
-						temp="";
-						for(int j=0;j<tempStr.length;j++)
-							temp = temp+tempStr[j]+" ";
-						//System.out.println("REPLACED2:"+temp);
-					}
-		    	}
-		    	//System.out.println("out: "+temp);
-			    System.out.println("1: "+startTag);
-			    System.out.println("2: "+temp);
-			    outputDocument.replace(startTag,temp);
-		    }
-		  }
-		try {
-			outputDocument.writeTo(new FileWriter("temp.html"));
+							pattern = "/>";  //either > or /> ..not sure
+							String replace = " value=\"hello\"/>";
+							p = Pattern.compile(pattern);
+							m = p.matcher(tempStr[last]);
+							tempStr[last]=m.replaceFirst(replace);
+							temp="";
+							for(int j=0;j<tempStr.length;j++)
+								temp = temp+tempStr[j]+" ";
+							//System.out.println("REPLACED1:"+temp);
+						}
+						else {
+							tempStr = str.split(" ");
+							int last = tempStr.length-1;
+							
+							pattern = ">";  //either > or /> ..not sure
+							String replace = " value=\"hello\"/>";
+							p = Pattern.compile(pattern);
+							m = p.matcher(tempStr[last]);
+							tempStr[last]=m.replaceFirst(replace);
+							temp="";
+							for(int j=0;j<tempStr.length;j++)
+								temp = temp+tempStr[j]+" ";
+							//System.out.println("REPLACED2:"+temp);
+						}
+			    	}
+			    	//System.out.println("out: "+temp);
+				    System.out.println("1: "+startTag);
+				    System.out.println("2: "+temp);
+				    outputDocument.replace(startTag,temp);
+				    
+				    try {
+				    	
+				    	data+=URLEncoder.encode(attributes.getValue("name"),"UTF-8")+ "=" + URLEncoder.encode("master", "UTF-8")+"&";
+				    System.out.println(data);
+				    }
+				    catch(UnsupportedEncodingException uee)
+				    {
+				    	System.err.println("Unsupported error");
+				    }
+				   
+			    }
+			    
+			  }	
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			var=attr.getValue("action");
+			if(var==null)
+				{continue;}
+		   if(var.charAt(0)=='/')
+		   {
+			   var=gurl+var;
+						  
+		   }
+		   else if(!var.contains("http"))
+		   {
+			   var=gurl+'/'+var;
+			   
+		   }
+
+		   System.out.println(var);
+		    sendBack(data);
+		    System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			//break;
+		}
+		//sumeet
+		
+		
+		/*try {
+			//outputDocument.writeTo(new FileWriter("temp.html"));
 			//outputDocument.writeTo(new OutputStreamWriter(System.out));
 		}
 		catch (IOException ioe) {
 			System.err.println("IOException error: "+ioe.getMessage());
-		}
+		}*/
 
 		/*for(Segment segment : segments) {
 			System.out.println(segment);
 		}*/
+		
 	}
 		  
 	public static void main(String []args) throws IOException,MalformedURLException {
-		//String url = args[0];  
-		//Firefuzzer fetcher = new  Firefuzzer(url);
-		//log( fetcher.getPageContent() );
+		String url = args[0]; 
+		gurl=url;
+		System.out.println(gurl);
+		Firefuzzer fetcher = new  Firefuzzer(url);
+		log( fetcher.getPageContent() );
 		/*streamline();
 		patternchecker();*/
 		//readTemp();
 		parseInput();
-		//Process p = new ProcessBuilder("firefox", "temp.html").start();
+		Process p = new ProcessBuilder("C:\\Program Files\\Internet Explorer\\iexplore", "temp.html").start();
 		
-		ClientHttpRequest chr = new ClientHttpRequest();
-		
+		//ClientHttpRequest chr = new ClientHttpRequest();
+
 		
 		}
 	}
