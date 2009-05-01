@@ -128,6 +128,20 @@ public class Firefuzzer {
         }
 	}
 	
+	private static String randomizer() {
+		Random randgen = new Random();
+		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
+	 	StringBuffer sb=new StringBuffer();
+	 	Random r = new Random();
+	 	int te=0;
+	 	for(int i=1;i<=300;i++){
+	 		te=r.nextInt(62);
+	 		sb.append(str1.charAt(te));
+	 	}
+	 	String token1 = sb.toString();
+	 	return token1;
+	}
+	
 	private static void parseInput() throws IOException{
 		Source source = null;
 		try {
@@ -195,9 +209,8 @@ public class Firefuzzer {
 						if(p.matcher(str).find()) {
 							tempStr = str.split(" ");
 							int last = tempStr.length-1;
-						
 							pattern = "/>";  //either > or /> ..not sure
-							String replace = " value=\"hello\"/>";
+							String replace = " value=\""+randomizer()+"\"/>";
 							p = Pattern.compile(pattern);
 							m = p.matcher(tempStr[last]);
 							tempStr[last]=m.replaceFirst(replace);
@@ -208,9 +221,8 @@ public class Firefuzzer {
 						else {
 							tempStr = str.split(" ");
 							int last = tempStr.length-1;
-							
 							pattern = ">";  //either > or /> ..not sure
-							String replace = " value=\"hello\"/>";
+							String replace = " value=\""+randomizer()+"\"/>";
 							p = Pattern.compile(pattern);
 							m = p.matcher(tempStr[last]);
 							tempStr[last]=m.replaceFirst(replace);
