@@ -10,23 +10,8 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 
 /**
  * @author gaurav
@@ -34,11 +19,7 @@ import org.apache.http.protocol.HTTP;
  */
 public class Firefuzzer {
 	private URL fURL;
-	private static int count = 0;
-	private static Vector<String> vecStr = new Vector<String>();
-	private static Boolean flag = false;
 	private static String var;
-	private static String var1 = "";
 	private static String gurl;
 
 	public Firefuzzer(URL aURL) {
@@ -92,7 +73,27 @@ public class Firefuzzer {
     		String value = strr.nextToken();
     		method.addParameter(attrib,value);
     	}
-    	method.setFollowRedirects(false);
+    	client.executeMethod(method);
+    	
+/*    	if (!method.getURI().toString().equals(var) ) {
+    		URI redirectLocation = null;
+    		try {
+    			redirectLocation = new URI( method.getURI().toString(), method.getResponseHeader("location").getValue(),method.getName().toString());
+    		}
+    		catch(Exception e) {
+    			System.out.println("Exception"+e.getMessage());
+    		}
+    		method = new PostMethod(redirectLocation.toString());
+    		StringTokenizer str1 = new StringTokenizer(data,"#");
+        	while(str.hasMoreTokens()) {
+        		StringTokenizer strr = new StringTokenizer(str1.nextToken(),",");
+        		String attrib = strr.nextToken();
+        		String value = strr.nextToken();
+        		method.addParameter(attrib,value);
+        	}
+    		client.executeMethod(method); 
+    	} 
+    	method.setFollowRedirects(true);*/
         
         try{
         	int returnCode = client.executeMethod(method);
@@ -106,30 +107,28 @@ public class Firefuzzer {
             	String readLine;
             	PrintWriter pw = new PrintWriter("temp.html");
             	while(((readLine = br.readLine()) != null)) {
-            		//System.err.println(readLine);
             		pw.println(readLine);
             		pw.flush();
             	}
-            	pw.println(var);
+            	pw.println("<html><body>HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH</body></html>");
             }
         }
         catch (Exception e) {
             System.err.println(e);
         }
         finally {
-        	Process p = new ProcessBuilder("firefox", "temp.html").start();
+        	new ProcessBuilder("firefox", "temp.html").start();
             method.releaseConnection();
     
             if(br != null)
             	try {
             		br.close();
-            		}
+            	}
             	catch (Exception fe) {}
         }
 	}
 	
 	private static String randomizer() {
-		Random randgen = new Random();
 		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
 	 	StringBuffer sb=new StringBuffer();
 	 	Random r = new Random();
@@ -189,17 +188,7 @@ public class Firefuzzer {
 			    				strtag = strtag+strA+" ";
 			    			}
 			    		}
-			    		Random randgen = new Random();
-			    		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
-			    	 	StringBuffer sb=new StringBuffer();
-			    	 	Random r = new Random();
-			    	 	int te=0;
-			    	 	for(int i=1;i<=300;i++){
-			    	 		te=r.nextInt(62);
-			    	 		sb.append(str1.charAt(te));
-			    	 	}
-			    	 	String token1 = sb.toString();
-			    		strtag=strtag+"value=\""+token1+"\"/>";
+			    		strtag=strtag+"value=\""+randomizer()+"\"/>";
 			    		temp=strtag;
 			    	}
 			    	else {
@@ -263,7 +252,7 @@ public class Firefuzzer {
 	}
 		  
 	public static void main(String []args) throws IOException,InterruptedException {
-		Process p = new ProcessBuilder("firefox", "about:blank").start();
+		new ProcessBuilder("firefox", "about:blank").start();
 		Thread.sleep(1000);
 		String url = args[0];
 		if(!url.contains("http://") | !url.contains("https://"))
