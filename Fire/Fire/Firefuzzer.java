@@ -42,7 +42,7 @@ public class Firefuzzer {
 	private static String gurl;
 
 	public Firefuzzer(URL aURL) {
-		if ( ! "http".equals(aURL.getProtocol())  ) {
+		if ( ! "http".equals(aURL.getProtocol())) {
 			throw new IllegalArgumentException("URL is not for HTTP Protocol: " + aURL);
 		}
 	    fURL = aURL;
@@ -52,7 +52,7 @@ public class Firefuzzer {
 		this ( new URL(aUrlName) );
 	}
 
-	public String getPageContent() throws IOException{
+	public String getPageContent() throws IOException {
 		String result = null;
 	    URLConnection connection = null;
 	    try {
@@ -78,28 +78,8 @@ public class Firefuzzer {
 		fw.close();
 	}
 	
-	 private static int processWordCount(String data,String pat) {
-		Scanner s = new Scanner(data);
-		s.useDelimiter(pat);
-		System.out.println("data: "+data);
-		Pattern p = Pattern.compile(pat);
-		String words = null;
-		int count = 0;
-		while (s.hasNext()) {
-			s.next();
-			count += 1;
-		}
-		return count;
-	 }
-	
 	private static void sendBack(String data) throws MalformedURLException,IOException
-	{
-		//URLConnection urlConn = (new URL(var)).openConnection();
-		HttpURLConnection connection = null;
-        String parametersAsString;
-        byte[] parametersAsBytes;
-        OutputStream dataOut;
-        HttpClient client = new HttpClient();
+	{	HttpClient client = new HttpClient();
         client.getParams().setParameter("http.useragent", "Test Client");
     	System.out.println("VAR: "+var);
 		
@@ -112,37 +92,40 @@ public class Firefuzzer {
     		String value = strr.nextToken();
     		method.addParameter(attrib,value);
     	}
-    	//connection.setDefaultAllowUserInteraction(false);
-        method.setFollowRedirects(false);
+    	method.setFollowRedirects(false);
         
         try{
-            int returnCode = client.executeMethod(method);
+        	int returnCode = client.executeMethod(method);
 
             if(returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
-              System.err.println("The Post method is not implemented by this URI");
-              // still consume the response body
-              method.getResponseBodyAsString();
+            	System.err.println("The Post method is not implemented by this URI");
+            	method.getResponseBodyAsString();
             } 
             else {
-              br = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-              String readLine;
-              PrintWriter pw = new PrintWriter("temp.html");
-              while(((readLine = br.readLine()) != null)) {
-                //System.err.println(readLine);
-            	  pw.println(readLine);
-            	  pw.flush();
-              }
-              pw.println(var);
+            	br = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+            	String readLine;
+            	PrintWriter pw = new PrintWriter("temp.html");
+            	while(((readLine = br.readLine()) != null)) {
+            		//System.err.println(readLine);
+            		pw.println(readLine);
+            		pw.flush();
+            	}
+            	pw.println(var);
             }
-          } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.err.println(e);
-          } finally {
+        }
+        finally {
         	Process p = new ProcessBuilder("firefox", "temp.html").start();
             method.releaseConnection();
-            
-            if(br != null) try { br.close(); } catch (Exception fe) {}
-          }
-        
+    
+            if(br != null)
+            	try {
+            		br.close();
+            		}
+            	catch (Exception fe) {}
+        }
 	}
 	
 	private static void parseInput() throws IOException{
@@ -157,19 +140,15 @@ public class Firefuzzer {
 			System.err.println("IOException occurred. Error: "+ioe.getMessage());
 		}
 		
-		//List<StartTag> segments = source.getAllStartTags(HTMLElementName.INPUT);
-		//sumeet
 		List<StartTag> branches=source.getAllStartTags(HTMLElementName.FORM);
 		System.out.println("FORM Tags: ");
 		System.out.println(branches.toString());
 		System.out.println("Input Tags: ");
 		OutputDocument outputDocument=new OutputDocument(source);
 		
-		for(StartTag sj:branches)
-		{
+		for(StartTag sj:branches) {
 			Attributes attr=sj.getAttributes();
 			String data="";
-			//gaurav
 			List<StartTag> segments = sj.getElement().getAllStartTags(HTMLElementName.INPUT);
                  			
 			String str = "",pattern = "",temp = "";
@@ -178,7 +157,6 @@ public class Firefuzzer {
 				str = "";
 				temp="";
 				
-			    //StartTag startTag = (StartTag)i.next();
 			    Attributes attributes=startTag.getAttributes();
 			    
 			    String rel=attributes.getValue("type");
@@ -186,10 +164,8 @@ public class Firefuzzer {
 			    	continue;
 			    if(rel.equalsIgnoreCase("text") | rel.equalsIgnoreCase("hidden") | rel.equalsIgnoreCase("password")) {
 			    	
-			    	//System.out.println(startTag);
 			    	str = startTag.toString();
 			    	if(str.contains("value")) {
-			    		//System.out.println("valueeeeeeeeeee: "+attributes.getValue("value"));
 			    		String atrString = attributes.toString();
 			    		StringTokenizer strAtr = new StringTokenizer(atrString);
 			    		String strtag = "<input ";
@@ -200,7 +176,6 @@ public class Firefuzzer {
 			    			}
 			    		}
 			    		Random randgen = new Random();
-			    		//String token1 = Double.toString(Math.abs(randgen.nextDouble()));
 			    		String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
 			    	 	StringBuffer sb=new StringBuffer();
 			    	 	Random r = new Random();
@@ -210,10 +185,7 @@ public class Firefuzzer {
 			    	 		sb.append(str1.charAt(te));
 			    	 	}
 			    	 	String token1 = sb.toString();
-			    	 	//System.out.println("STRING: "+token1);
 			    		strtag=strtag+"value=\""+token1+"\"/>";
-			    		//System.out.println(attributes.getValue("value"));
-			    		//System.out.println("O: "+str);
 			    		temp=strtag;
 			    	}
 			    	else {
@@ -232,7 +204,6 @@ public class Firefuzzer {
 							temp="";
 							for(int j=0;j<tempStr.length;j++)
 								temp = temp+tempStr[j]+" ";
-							//System.out.println("REPLACED1:"+temp);
 						}
 						else {
 							tempStr = str.split(" ");
@@ -246,59 +217,50 @@ public class Firefuzzer {
 							temp="";
 							for(int j=0;j<tempStr.length;j++)
 								temp = temp+tempStr[j]+" ";
-							//System.out.println("REPLACED2:"+temp);
 						}
 			    	}
-			    	//System.out.println("out: "+temp);
-				    System.out.println("1: "+startTag);
+			        System.out.println("1: "+startTag);
 				    System.out.println("2: "+temp);
 				    outputDocument.replace(startTag,temp);
 				    
 				    try {
 				    	outputDocument.writeTo(new FileWriter("temp.html"));	
 				    	data+=URLEncoder.encode(attributes.getValue("name"),"UTF-8")+ "," + URLEncoder.encode("master", "UTF-8")+"#";
-				    	//System.out.println(data);
 				    }
 				    catch(UnsupportedEncodingException uee)
 				    {
 				    	System.err.println("Unsupported error");
-				    }
-				   
+				    }  
 			    }
-			    
-			  }	
+			}	
 			
 			var=attr.getValue("action");
-			if(var==null)
-				{continue;}
-			if(var.charAt(0)=='/')
-            {
-                    var=gurl+var;                        
+			if(var==null) {
+				continue;
+			}
+			if(var.charAt(0)=='/') {
+				var=gurl+var;                        
             }
-            else if(!var.contains("http"))
-            {
-                    var=gurl+'/'+var;
+            else if(!var.contains("http") | !var.contains("https")) {
+            	var=gurl+'/'+var;
             }
 
-
-		    //System.out.println("VARRRRRRRRRRRRRRRR"+var);
-		    sendBack(data);
+			sendBack(data);
 		    System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-			//break;
 		}
-		//sumeet		
 	}
 		  
-	public static void main(String []args) throws IOException,MalformedURLException {
+	public static void main(String []args) throws IOException,InterruptedException {
 		Process p = new ProcessBuilder("firefox", "about:blank").start();
-		String url = args[0]; 
+		Thread.sleep(1000);
+		String url = args[0];
+		if(!url.contains("http://") | !url.contains("https://"))
+			url="http://"+url;
 		gurl=url;
 		System.out.println(gurl);
 		Firefuzzer fetcher = new  Firefuzzer(url);
 		log( fetcher.getPageContent() );
-		/*patternchecker();*/
-		//readTemp();
+		
 		parseInput();
-		//Process p = new ProcessBuilder("firefox", "temp.html").start();
-		}
 	}
+}
