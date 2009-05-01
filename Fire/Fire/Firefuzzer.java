@@ -9,6 +9,24 @@ import java.net.*;
 import java.util.*;
 import java.util.regex.*;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 /**
  * @author gaurav
@@ -20,6 +38,7 @@ public class Firefuzzer {
 	private static Vector<String> vecStr = new Vector<String>();
 	private static Boolean flag = false;
 	private static String var;
+	private static String var1 = "";
 	private static String gurl;
 
 	public Firefuzzer(URL aURL) {
@@ -59,60 +78,6 @@ public class Firefuzzer {
 		fw.close();
 	}
 	
-	/*private static void streamline() {
-		try {
-			Scanner scan = new Scanner(new FileReader("page.loaded"));
-			File f = new File("temp.loaded");
-			if (f.exists()) {
-				f.delete();
-				f.createNewFile();
-			}
-			PrintWriter pw = new PrintWriter("temp.loaded");
-			String str = "",temp = "";
-			while(scan.hasNext()) {
-				str = scan.next().toLowerCase();
-				if(str.contains("<input")) {
-					temp=temp+str+" ";
-					while(scan.hasNext()) {
-						str=scan.next();
-						//System.out.println(str);
-						if(!str.contains(">")) {
-							temp=temp+str+" ";
-						}
-						else if(str.contains(">") && str.contains("<input")) {
-							temp=temp+str+" ";
-							continue;
-						}
-						else if(str.contains(">")){
-							temp=temp+str+" ";
-							break;
-						}
-						else {
-							temp=temp+str+" ";
-						}
-					}
-					pw.println(temp);
-					temp = "";
-				}
-				else {
-					pw.println(str);
-					pw.flush();
-				}
-			}
-			pw.close();
-			scan.close();
-		}
-		catch (FileNotFoundException fnfe) {
-			System.err.println("Exception error: "+fnfe.getMessage());
-		}
-		catch(IOException ioe) {
-			System.err.println("IOException error: "+ioe.getMessage());
-		}
-		catch(Exception e) {
-			System.err.println("Exception error: "+e.getMessage());
-		}
-	}
-	
 	 private static int processWordCount(String data,String pat) {
 		Scanner s = new Scanner(data);
 		s.useDelimiter(pat);
@@ -127,156 +92,57 @@ public class Firefuzzer {
 		return count;
 	 }
 	
-	private static void patternchecker() throws IOException {
-		Scanner scan = new Scanner(new FileReader("temp.loaded"));
-		File f = new File("value.loaded");
-		if (f.exists()) {
-			f.delete();
-			f.createNewFile();
-		}
-		PrintWriter pw = new PrintWriter("value.loaded");
-		Boolean flag = false;
-		while(scan.hasNextLine()) {
-			String strLine = scan.nextLine().toLowerCase();
-			if((strLine.contains("type=\"text\"") | strLine.contains("type=text") | strLine.contains("type=\"password\"") | strLine.contains("type=password") | strLine.contains("type=\"hidden\"") | strLine.contains("type=hidden")) & strLine.contains("<input") & strLine.contains(">")) {
-				StringTokenizer strToken = new StringTokenizer(strLine);
-				String strLineToken = "",temp = "";
-				int counter=0;
-				while(strToken.hasMoreTokens()) {
-					strLineToken = strToken.nextToken();
-					if(strLineToken.contains("<input") | flag==true) {
-						temp=temp+strLineToken+" ";
-						while(strToken.hasMoreTokens()) {
-							strLineToken = strToken.nextToken();
-							if(strLineToken.contains(">")) {
-								temp=temp+strLineToken+" ";
-								if(strLineToken.contains("<input")) {
-									flag=true;
-									counter++;
-								}
-								else {
-									flag = false;
-									counter=0;
-								}
-								break;
-							}
-							else {
-								temp=temp+strLineToken+" ";
-							}
-						}
-						String pattern = "value";
-						String pattern1 = "/>";
-						Pattern p = Pattern.compile(pattern);
-						Pattern p1 = Pattern.compile(pattern1);
-						Matcher m = p.matcher(temp);
-						System.out.println("Counter: "+processWordCount(temp, "value"));
-						if(m.find()) {
-							System.out.println("MATCH: "+temp);
-							//pw.println(temp);
-							//pw.flush();
-						}
-						else if(p1.matcher(temp).find()) {
-							String[] tempStr = temp.split(" ");
-							int last = tempStr.length-1;
-						
-							pattern = "/>";  //either > or /> ..not sure
-							String replace = " value=\"hello\"/>";
-							p = Pattern.compile(pattern);
-							m = p.matcher(tempStr[last]);
-							tempStr[last]=m.replaceFirst(replace);
-							temp="";
-							for(int i=0;i<tempStr.length;i++)
-								temp = temp+tempStr[i]+" ";
-							System.out.println("REPLACED1:"+temp);
-							//pw.println(temp);
-							//pw.flush();
-							//System.out.println("REPLACED: "+);
-						}
-						else {
-							String[] tempStr = temp.split(" ");
-							int last = tempStr.length-1;
-							
-							pattern = ">";  either > or /> ..not sure
-							String replace = " value=\"hello\"/>";
-							p = Pattern.compile(pattern);
-							m = p.matcher(tempStr[last]);
-							tempStr[last]=m.replaceFirst(replace);
-							temp="";
-							for(int i=0;i<tempStr.length;i++)
-								temp = temp+tempStr[i]+" ";
-							System.out.println("REPLACED2:"+temp);
-							//pw.println(temp);
-							//pw.flush();
-							//System.out.println("REPLACED: "+);
-						}
-						pw.println(temp);
-						pw.flush();
-					}
-					else {
-						pw.println(strLineToken);
-						pw.flush();
-					}
-				}
-			}
-			else  {
-				pw.println(strLine);
-				pw.flush();
-			}
-		}
-	}
-	
-	private static void readTemp() throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("temp.loaded"));
-		String s = "";
-		while((s=br.readLine())!=null) {
-			System.out.println(s);
-		}
-	}*/
 	private static void sendBack(String data) throws MalformedURLException,IOException
 	{
+		//URLConnection urlConn = (new URL(var)).openConnection();
+		HttpURLConnection connection = null;
+        String parametersAsString;
+        byte[] parametersAsBytes;
+        OutputStream dataOut;
+        HttpClient client = new HttpClient();
+        client.getParams().setParameter("http.useragent", "Test Client");
+    	System.out.println("VAR: "+var);
 		
-		URLConnection urlConn = (new URL(var)).openConnection();
-		
-        if (urlConn instanceof HttpURLConnection) {
-            HttpURLConnection httpConn = (HttpURLConnection) urlConn;
-            httpConn.setDoInput(true);
-            httpConn.setDoOutput(true);
-            httpConn.setRequestMethod("POST");
-            //String data = "sumeetjindal";
-           /* 
-            String data = URLEncoder.encode("name", "UTF-8") + "=" +
-                    URLEncoder.encode("sumeet jindal", "UTF-8");
-            */
-            OutputStreamWriter writer = new OutputStreamWriter(httpConn.getOutputStream());
-            writer.write(data);
-            writer.flush();
+    	PostMethod method = new PostMethod(var);
+    	BufferedReader br = null;
+    	StringTokenizer str = new StringTokenizer(data,"#");
+    	while(str.hasMoreTokens()) {
+    		StringTokenizer strr = new StringTokenizer(str.nextToken(),",");
+    		String attrib = strr.nextToken();
+    		String value = strr.nextToken();
+    		method.addParameter(attrib,value);
+    	}
+    	//connection.setDefaultAllowUserInteraction(false);
+        method.setFollowRedirects(false);
+        
+        try{
+            int returnCode = client.executeMethod(method);
 
-            try {
-                System.out.println("LOGIN RESPONSE: " + httpConn.getResponseCode());
-                System.out.println(httpConn.getResponseMessage());
-                try {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-                
-                String line;
-                PrintWriter pw = new PrintWriter("temp.html");
-                while ((line = buffer.readLine()) != null) {
-                    System.out.println(line);
-                    pw.println(line);
-                }
-                writer.close();
-                buffer.close();
-                }
-                catch(IOException e) {
-                	System.err.println("ioexception");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if(returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
+              System.err.println("The Post method is not implemented by this URI");
+              // still consume the response body
+              method.getResponseBodyAsString();
+            } 
+            else {
+              br = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+              String readLine;
+              PrintWriter pw = new PrintWriter("temp.html");
+              while(((readLine = br.readLine()) != null)) {
+                //System.err.println(readLine);
+            	  pw.println(readLine);
+            	  pw.flush();
+              }
+              pw.println(var);
             }
-        }
-		
-		
-		
-		
+          } catch (Exception e) {
+            System.err.println(e);
+          } finally {
+        	Process p = new ProcessBuilder("firefox", "temp.html").start();
+            method.releaseConnection();
+            
+            if(br != null) try { br.close(); } catch (Exception fe) {}
+          }
+        
 	}
 	
 	private static void parseInput() throws IOException{
@@ -389,9 +255,9 @@ public class Firefuzzer {
 				    outputDocument.replace(startTag,temp);
 				    
 				    try {
-				    	
-				    	data+=URLEncoder.encode(attributes.getValue("name"),"UTF-8")+ "=" + URLEncoder.encode("master", "UTF-8")+"&";
-				    System.out.println(data);
+				    	outputDocument.writeTo(new FileWriter("temp.html"));	
+				    	data+=URLEncoder.encode(attributes.getValue("name"),"UTF-8")+ "," + URLEncoder.encode("master", "UTF-8")+"#";
+				    	//System.out.println(data);
 				    }
 				    catch(UnsupportedEncodingException uee)
 				    {
@@ -402,67 +268,37 @@ public class Firefuzzer {
 			    
 			  }	
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			var=attr.getValue("action");
 			if(var==null)
 				{continue;}
-		   if(var.charAt(0)=='/')
-		   {
-			   var=gurl+var;
-						  
-		   }
-		   else if(!var.contains("http"))
-		   {
-			   var=gurl+'/'+var;
-			   
-		   }
+			if(var.charAt(0)=='/')
+            {
+                    var=gurl+var;                        
+            }
+            else if(!var.contains("http"))
+            {
+                    var=gurl+'/'+var;
+            }
 
-		   System.out.println(var);
+
+		    //System.out.println("VARRRRRRRRRRRRRRRR"+var);
 		    sendBack(data);
 		    System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 			//break;
 		}
-		//sumeet
-		
-		
-		/*try {
-			//outputDocument.writeTo(new FileWriter("temp.html"));
-			//outputDocument.writeTo(new OutputStreamWriter(System.out));
-		}
-		catch (IOException ioe) {
-			System.err.println("IOException error: "+ioe.getMessage());
-		}*/
-
-		/*for(Segment segment : segments) {
-			System.out.println(segment);
-		}*/
-		
+		//sumeet		
 	}
 		  
 	public static void main(String []args) throws IOException,MalformedURLException {
+		Process p = new ProcessBuilder("firefox", "about:blank").start();
 		String url = args[0]; 
 		gurl=url;
 		System.out.println(gurl);
 		Firefuzzer fetcher = new  Firefuzzer(url);
 		log( fetcher.getPageContent() );
-		/*streamline();
-		patternchecker();*/
+		/*patternchecker();*/
 		//readTemp();
 		parseInput();
-		Process p = new ProcessBuilder("C:\\Program Files\\Internet Explorer\\iexplore", "temp.html").start();
-		
-		//ClientHttpRequest chr = new ClientHttpRequest();
-
-		
+		//Process p = new ProcessBuilder("firefox", "temp.html").start();
 		}
 	}
