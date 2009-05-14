@@ -25,20 +25,27 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-public class BufferOverflow {
+class BufferOverflow {
     private static int countForms = 0;
     private static int countInputs = 0;
     private static String var;
     private static int []arrayBuffer = new int[5]; 
     public static String globalURL;
     public static boolean globalDetailFlag = false;
+    public static boolean flipFlop = false;
     
+    /**
+     * Initialize the Array
+     * */
     public BufferOverflow() {
     	for(int i=0;i<arrayBuffer.length;i++) {
     		arrayBuffer[i]=0;
     	}
     }
     
+    /**
+     * Showcases the analysis of Buffer Overflow
+     * */
 	public static void analyzeBufferOverflow() {
     	System.out.println("########################################################################################################################");
         System.out.println("<---BUFFER OVERFLOW ANALYSIS--->");
@@ -56,6 +63,9 @@ public class BufferOverflow {
     	System.out.println("########################################################################################################################");
     }
       
+	/**
+	 * Traverses over the HTML source file and embeds random String into the
+	 * value of the 'input' tag*/
     private static void sendBack(String data) throws MalformedURLException,IOException
     {   HttpClient client = new HttpClient();
         client.getParams().setParameter("http.useragent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
@@ -78,6 +88,7 @@ public class BufferOverflow {
         }
       
         try{
+        	
         	int returnCode = client.executeMethod(method);
         	if(globalDetailFlag==true)
         		System.out.println("Return: "+method.getStatusCode()+" "+method.getStatusText() );
@@ -112,6 +123,9 @@ public class BufferOverflow {
         }
     }
       
+    /**
+     * Randomly generates a long String
+     * */
     private static String randomizer() {
         String str1=new  String("QAa0bcLdUK2eHfJgTP8XhiFj61DOklNm9nBoI5pGqYVrs3CtSuMZvwWx4yE7zR");
         StringBuffer sb=new StringBuffer();
@@ -125,6 +139,7 @@ public class BufferOverflow {
         return token1;
     }
       
+    /**Parses over the HTML file and populates the List data structure*/
     public static void parseInput() throws IOException{
         Source source = null;
         try {
@@ -141,7 +156,6 @@ public class BufferOverflow {
         List<StartTag> branches=source.getAllStartTags(HTMLElementName.FORM);
         countForms = branches.size();
         System.out.println("########################################################################################################################");
-        OutputDocument outputDocument=new OutputDocument(source);
           
         Attributes attr;
         String data = "";
@@ -355,7 +369,14 @@ public class BufferOverflow {
             	System.out.println("Form #: "+currentForm);
             }
             if(globalDetailFlag==false)
-            	System.out.println(".");
+            	if(flipFlop==false) {
+            		System.out.println(">>");
+            		flipFlop=true;
+            	}
+            	else {
+            		System.out.println("<<");
+            		flipFlop=false;
+            	}
             sendBack(data);
             if(globalDetailFlag==true)
             	System.out.println("########################################################################################################################");

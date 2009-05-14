@@ -1,33 +1,41 @@
 package org.Firefuzzer.Fire;
 
-import net.htmlparser.jericho.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.regex.*;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
  * @author Gaurav Pandey (gip2103) and Sumit Jindal
  *
  */
+
+/**
+ * Main Class of the Project
+ * */
 public class Firefuzzer {
 	private URL fURL;
-
+	
+	/**
+	 * Constructor checks the URL and acertains whether it is HTTP or not
+	 * */
     public Firefuzzer(URL aURL) {
         if ( ! "http".equals(aURL.getProtocol())) {
-        	throw new IllegalArgumentException("URL is not for HTTP Protocol: " + aURL);
+        	throw new IllegalArgumentException("URL is not for HTTP Protocol" +
+        			": " + aURL);
         }
         fURL = aURL;
     }
-
+    
+    /**
+     * Constructor checks whether the URL is malformed or not
+     * */
     public Firefuzzer( String aUrlName ) throws MalformedURLException {
         this ( new URL(aUrlName) );
     }
-
+    
+    /**
+     * Fetches the HTML source file from a given URL 
+     * */
     public String getPageContent() throws IOException {
         String result = null;
         URLConnection connection = null;
@@ -42,14 +50,12 @@ public class Firefuzzer {
         }
         return result;
     }
-
+    
+    /**
+     * Logs the incoming HTML source infomation into a file
+     * */
     private static void log(Object aObject)  {
         try {
-        	/*File f = new File("page.loaded");
-        	if (f.exists()) {
-				f.delete();
-            	f.createNewFile();
-        	}*/
         	FileWriter fww = new FileWriter("page.loaded");
         	fww.close();
         	FileWriter fw = new FileWriter("page.loaded",true);
@@ -60,8 +66,13 @@ public class Firefuzzer {
         	System.err.println("Exception occured: "+e.getMessage());
         }
     }
-                
-    public static void main(String []args) throws IOException,InterruptedException {
+     
+    /**
+     * Main function of the Project to start either Buffer Overflow 
+     * or SQL Injection Attack on the target URL
+     * */
+    public static void main(String []args) throws IOException,
+    		InterruptedException {
 
     	System.out.println("");
     	System.out.println("\t8888888888 8888888 8888888b.  8888888888 8888888888 888     888 8888888888P 8888888888P 8888888888 8888888b.");
@@ -74,8 +85,11 @@ public class Firefuzzer {
     	System.out.println("\t888        8888888 888   T88b 8888888888 888         \"Y88888P\"  d8888888888 d8888888888 8888888888 888   T88b ");
     	System.out.println("");
         Thread.sleep(1000);
-        String url = args[0];
-    	if(args.length==2 || args.length==3) {}
+        String url = null;
+        
+    	if(args.length==2 || args.length==3) {
+            url = args[0];
+    	}
     	else {
     		System.err.println("Incorrect number of parameters");
     		System.err.println("Syntax is java Firefuzzer <url> <buffer/sql> <detail(OPTIONAL)>");
@@ -103,7 +117,8 @@ public class Firefuzzer {
                 System.out.println("Only http protocol based sites are handled. Wait for future release.");
                 System.exit(0);
         }
-        
+        new File("page.loaded").deleteOnExit();
+        new File("temp.html").deleteOnExit();
         System.out.println("########################################################################################################################");
         System.out.println("Targeted URL: "+url);
         System.out.println("########################################################################################################################");

@@ -10,14 +10,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
@@ -25,20 +23,27 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-public class SQLInjection {
+class SQLInjection {
 	private static int countForms = 0;
     private static int countInputs = 0;
     private static String var;
     private static int []arrayBuffer = new int[5]; 
     public static String globalURL;
     public static boolean globalDetailFlag = false;
+    public static boolean flipFlop = false;
     
+    /**
+     * Initializes the Array
+     * */
     public SQLInjection() {
     	for(int i=0;i<arrayBuffer.length;i++) {
     		arrayBuffer[i]=0;
     	}
     }
     
+    /**
+     *Performs analysis over SQL Injection and showcases the result to the User
+     */
 	public static void analyzeSQLInjection() {
     	System.out.println("########################################################################################################################");
         System.out.println("<---SQL INJECTION ANALYSIS--->");
@@ -55,11 +60,14 @@ public class SQLInjection {
     	System.out.println("########################################################################################################################");
     }
       
+	/**
+	 * Traverses over the HTML source file and embeds it with huge sounds
+	 * */
     private static void sendBack(String data) throws MalformedURLException,IOException
     {   HttpClient client = new HttpClient();
         client.getParams().setParameter("http.useragent", "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
-              
-        System.out.println("URL: "+var);
+        if(globalDetailFlag==true)     
+        	System.out.println("URL: "+var);
         PostMethod method = new PostMethod(var);
         BufferedReader br = null;
         StringTokenizer str = new StringTokenizer(data,"#");
@@ -72,6 +80,7 @@ public class SQLInjection {
         }
       
         try{
+        	//System.out.println(method.getResponseHeaders());
         	int returnCode = client.executeMethod(method);
         	if(globalDetailFlag==true)
         		System.out.println("Status: "+method.getStatusCode());
@@ -106,6 +115,8 @@ public class SQLInjection {
         }
     }
       
+    /**
+     * Parses the HTML source input file and populates the List data structure*/
     public static void parseInput() throws IOException{
         Source source = null;
         try {
@@ -123,7 +134,7 @@ public class SQLInjection {
         List<StartTag> branches=source.getAllStartTags(HTMLElementName.FORM);
         countForms = branches.size();
         System.out.println("########################################################################################################################");
-        OutputDocument outputDocument=new OutputDocument(source);
+
         Attributes attr;
         String s="",data = "";
         String str = "",pattern = "",temp = "";
@@ -226,10 +237,17 @@ public class SQLInjection {
             }
             if(globalDetailFlag==true) {
             	System.out.println("data: "+data);
-            	System.out.println("Current Loop #: "+currentLoop);
+            	System.out.println("SQL Injection #: "+currentLoop);
             }
             if(globalDetailFlag==false)
-            	System.out.println(".");
+            	if(flipFlop==false) {
+            		System.out.println(">>");
+            		flipFlop=true;
+            	}
+            	else {
+            		System.out.println("<<");
+            		flipFlop=false;
+            	}
             sendBack(data);
             if(globalDetailFlag==true)
             	System.out.println("########################################################################################################################");
