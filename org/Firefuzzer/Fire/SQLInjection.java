@@ -4,6 +4,7 @@ import static java.lang.System.out;
 import static java.lang.System.err;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -153,9 +154,18 @@ class SQLInjection {
 		Attributes attr;
 		String s = "", data = "";
 		String str = "", pattern = "", temp = "";
+		File dir1 = new File (".");
+		String location = dir1.getCanonicalPath()+"/inject.conf";
 		String[] tempStr = null;
+		dir1 = new File(location);
+		if(!dir1.exists()) {
+			System.out.println("\n\"inject.conf\" file does not exist.");
+			System.out.println("Make sure it exists in the same folder as the runnable jar.");
+			System.out.println("Please retryi listen");
+			System.exit(0);
+		}
 
-		BufferedReader br = new BufferedReader(new FileReader("org/Firefuzzer/Fire/inject.conf"));
+		BufferedReader br = new BufferedReader(new FileReader(location));
 		while ((s = br.readLine()) != null) {
 			if (!s.isEmpty()) {
 				currentLoop++;
