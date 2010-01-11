@@ -161,7 +161,7 @@ class SQLInjection {
 		if(!dir1.exists()) {
 			System.out.println("\n\"inject.conf\" file does not exist.");
 			System.out.println("Make sure it exists in the same folder as the runnable jar.");
-			System.out.println("Please retryi listen");
+			System.out.println("Please retry again");
 			System.exit(0);
 		}
 
