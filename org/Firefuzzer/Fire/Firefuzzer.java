@@ -16,7 +16,7 @@ public class Firefuzzer {
 	private URL fURL;
 
 	/**
-	 * Constructor checks the URL and acertains whether it is HTTP or not
+	 * Constructor checks the URL and ascertains whether it is HTTP or not
 	 * */
 	public Firefuzzer(URL aURL) {
 		if (!"http".equals(aURL.getProtocol())) {

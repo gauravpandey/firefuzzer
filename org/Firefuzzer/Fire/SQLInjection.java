@@ -155,7 +155,7 @@ class SQLInjection {
 		String str = "", pattern = "", temp = "";
 		String[] tempStr = null;
 
-		BufferedReader br = new BufferedReader(new FileReader("inject.conf"));
+		BufferedReader br = new BufferedReader(new FileReader("org/Firefuzzer/Fire/inject.conf"));
 		while ((s = br.readLine()) != null) {
 			if (!s.isEmpty()) {
 				currentLoop++;
