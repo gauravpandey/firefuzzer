@@ -61,7 +61,7 @@ class SQLInjection {
 	/**
 	 *Performs analysis over SQL Injection and showcases the result to the User
 	 */
-	public static void analyzeSQLInjection() {
+	public void analyzeSQLInjection() {
 		logger.info("########################################################################################################################");
 		logger.info("<---SQL INJECTION ANALYSIS--->");
 		logger.info("Total # of Forms: " + countForms);
@@ -151,7 +151,7 @@ class SQLInjection {
 	/**
 	 * Parses the HTML source input file and populates the List data structure
 	 */
-	public static void parseInput() throws IOException {
+	public void parseInput() throws IOException {
 		Source source = null;
 		try {
 			source = new Source(new FileReader("page.loaded"));
@@ -170,18 +170,11 @@ class SQLInjection {
 		Attributes attr;
 		String s = "", data = "";
 		String str = "", pattern = "", temp = "";
-		File dir1 = new File (".");
-		String location = dir1.getCanonicalPath()+"/inject.conf";
+		final ClassLoader cl = this.getClass().getClassLoader();
+		java.io.InputStream in = cl.getResourceAsStream("inject.conf");
 		String[] tempStr = null;
-		dir1 = new File(location);
-		if(!dir1.exists()) {
-			logger.info("\n\"inject.conf\" file does not exist.");
-			logger.info("Make sure it exists in the same folder as the runnable jar.");
-			logger.info("Please retry again");
-			System.exit(0);
-		}
 
-		BufferedReader br = new BufferedReader(new FileReader(location));
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		while ((s = br.readLine()) != null) {
 			if (!s.isEmpty()) {
 				currentLoop++;

@@ -99,8 +99,9 @@ public class Firefuzzer {
 			BufferOverflow.globalURL = url;
 			logger.info("<---BUFFER OVERFLOW ATTACK--->");
 			logger.info("########################################################################################################################");
-			BufferOverflow.parseInput();
-			BufferOverflow.analyzeBufferOverflow();
+			final BufferOverflow overflow = new BufferOverflow();
+			overflow.parseInput();
+			overflow.analyzeBufferOverflow();
 		} else if (args[1].equalsIgnoreCase("sql")) {
 			if (args.length == 3)
 				if (args[2].equalsIgnoreCase("detail"))
@@ -108,8 +109,9 @@ public class Firefuzzer {
 			SQLInjection.globalURL = url;
 			logger.info("<---SQL INJECTION ATTACK--->");
 			logger.info("########################################################################################################################");
-			SQLInjection.parseInput();
-			SQLInjection.analyzeSQLInjection();
+			final SQLInjection injector = new SQLInjection();
+			injector.parseInput();
+			injector.analyzeSQLInjection();
 		}
 	}
 

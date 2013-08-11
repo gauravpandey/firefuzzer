@@ -62,7 +62,7 @@ class BufferOverflow {
 	/**
 	 * Showcases the analysis of Buffer Overflow
 	 * */
-	public static void analyzeBufferOverflow() {
+	public void analyzeBufferOverflow() {
 		logger.info("########################################################################################################################");
 		logger.info("<---BUFFER OVERFLOW ANALYSIS--->");
 		logger.info("Total # of Forms: " + countForms);
@@ -171,7 +171,7 @@ class BufferOverflow {
 	}
 
 	/** Parses over the HTML file and populates the List data structure */
-	public static void parseInput() throws IOException {
+	public void parseInput() throws IOException {
 		Source source = null;
 		try {
 			source = new Source(new FileReader("page.loaded"));
