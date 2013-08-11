@@ -1,7 +1,5 @@
 package org.Firefuzzer.Fire;
 
-import static java.lang.System.err;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,6 +15,11 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.htmlparser.jericho.Attributes;
+import net.htmlparser.jericho.HTMLElementName;
+import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.StartTag;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -27,11 +30,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.log4j.Logger;
 
-import net.htmlparser.jericho.Attributes;
-import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.Source;
-import net.htmlparser.jericho.StartTag;
-
+/**
+ * 
+ * @author pandey
+ *
+ */
 class SQLInjection {
 	public static String globalURL;
 	public static boolean globalDetailFlag = false;
@@ -109,7 +112,7 @@ class SQLInjection {
 				logger.info("Status: " + statusLine.getStatusCode());
 			arrayBuffer[(statusLine.getStatusCode() / 100) - 1]++;
 			if (returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
-				err.println("The Post method is not implemented by this URI");
+				logger.error("The Post method is not implemented by this URI");
 				httpResponse.getEntity().getContent();
 			} else {
 				br = new BufferedReader(new InputStreamReader(
@@ -130,7 +133,7 @@ class SQLInjection {
 				}
 			}
 		} catch (Exception e) {
-			err.println(e);
+			logger.error(e);
 		} finally {
 			// new ProcessBuilder("firefox", "temp.html").start();
 			method.releaseConnection();
@@ -151,9 +154,9 @@ class SQLInjection {
 		try {
 			source = new Source(new FileReader("page.loaded"));
 		} catch (FileNotFoundException fnfe) {
-			err.println("File not found. Error: " + fnfe.getMessage());
+			logger.error("File not found. Error: " + fnfe.getMessage());
 		} catch (IOException ioe) {
-			err.println("IOException occurred. Error: " + ioe.getMessage());
+			logger.error("IOException occurred. Error: " + ioe.getMessage());
 		}
 		int currentLoop = 0;
 
@@ -253,14 +256,13 @@ class SQLInjection {
 										+ URLEncoder.encode(random, "UTF-8")
 										+ "#";
 							} catch (UnsupportedEncodingException uee) {
-								err.println("Unsupported error");
+								logger.error("Unsupported error");
 							}
 						}
 					}
 					var = attr.getValue("action");
 					if (var == null || var.equals("")) {
-						err
-								.println("No URL specified in FORM TAG-ACTION field");
+						logger.error("No URL specified in FORM TAG-ACTION field");
 						continue;
 					}
 					if (var.charAt(0) == '/') {

@@ -1,16 +1,20 @@
 package org.Firefuzzer.Fire;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
 /**
- * @author Gaurav Pandey
  * 
- * Main FireFuzzer class
- * */
+ * @author pandey
+ *
+ */
 public class Firefuzzer {
 	private static final Logger logger = Logger.getLogger(Firefuzzer.class);
 
