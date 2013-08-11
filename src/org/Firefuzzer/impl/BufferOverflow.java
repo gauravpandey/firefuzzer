@@ -1,4 +1,4 @@
-package org.firefuzzer.model;
+package org.firefuzzer.impl;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -38,7 +38,7 @@ import com.google.common.collect.Lists;
  * @author pandey
  *
  */
-class BufferOverflow extends AbstractAttack {
+class BufferOverflow  {
 	public static String globalURL;
 	public static boolean globalDetailFlag = false;
 	public static boolean flipFlop = false;

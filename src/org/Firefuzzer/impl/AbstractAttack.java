@@ -1,4 +1,4 @@
-package org.firefuzzer.model;
+package org.firefuzzer.impl;
 
 import org.firefuzzer.service.Attack;
 
