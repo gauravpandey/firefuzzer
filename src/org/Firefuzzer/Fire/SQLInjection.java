@@ -1,6 +1,5 @@
 package org.Firefuzzer.Fire;
 
-import static java.lang.System.out;
 import static java.lang.System.err;
 
 import java.io.BufferedReader;
@@ -18,23 +17,31 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.log4j.Logger;
+
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-
 class SQLInjection {
-	private static int countForms = 0;
-	private static int countInputs = 0;
-	private static String var;
-	private static int[] arrayBuffer = new int[5];
 	public static String globalURL;
 	public static boolean globalDetailFlag = false;
 	public static boolean flipFlop = false;
+
+	private static final Logger logger = Logger.getLogger(SQLInjection.class);
+
+	private static int countForms = 0;
+	private static String var;
+	private static int[] arrayBuffer = new int[5];
 
 	/**
 	 * Initializes the Array
@@ -49,72 +56,77 @@ class SQLInjection {
 	 *Performs analysis over SQL Injection and showcases the result to the User
 	 */
 	public static void analyzeSQLInjection() {
-		System.out
-				.println("########################################################################################################################");
-		System.out.println("<---SQL INJECTION ANALYSIS--->");
-		System.out.println("Total # of Forms: " + countForms);
-		System.out
-				.println("<<-Categorizing the available data on basis of HTTP Status Codes->>");
-		System.out.println("Informational Codes 1xx Series: " + arrayBuffer[0]);
-		System.out.println("Successful Client Interaction related 2xx Series: "
+		logger.info("########################################################################################################################");
+		logger.info("<---SQL INJECTION ANALYSIS--->");
+		logger.info("Total # of Forms: " + countForms);
+		logger.info("<<-Categorizing the available data on basis of HTTP Status Codes->>");
+		logger.info("Informational Codes 1xx Series: " + arrayBuffer[0]);
+		logger.info("Successful Client Interaction related 2xx Series: "
 				+ arrayBuffer[1]);
-		System.out.println("Redirection related 3xx Series: " + arrayBuffer[2]);
-		System.out
-				.println("Client Error related 4xx Series: " + arrayBuffer[3]);
-		System.out
-				.println("Server Error related 5xx Series: " + arrayBuffer[4]);
-		System.out
-				.println("########################################################################################################################");
-		System.out
-				.println("########################################################################################################################");
-		System.out
-				.println("For more Information on HTTP Status Code Series, refer the 'HTTP_STATUS_CODE.pdf' in Document folder.");
-		System.out
-				.println("########################################################################################################################");
+		logger.info("Redirection related 3xx Series: " + arrayBuffer[2]);
+		logger.info("Client Error related 4xx Series: " + arrayBuffer[3]);
+		logger.info("Server Error related 5xx Series: " + arrayBuffer[4]);
+		logger.info("########################################################################################################################");
+		logger.info("########################################################################################################################");
+		logger.info("For more Information on HTTP Status Code Series, refer the 'HTTP_STATUS_CODE.pdf' in Document folder.");
+		logger.info("########################################################################################################################");
 	}
 
 	/**
 	 * Traverses over the HTML source file and embeds it with huge sounds
 	 * */
-	private static void sendBack(String data) throws MalformedURLException,
-			IOException {
-		HttpClient client = new HttpClient();
-		client
-				.getParams()
-				.setParameter(
-						"http.useragent",
-						"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
-		if (globalDetailFlag == true)
-			System.out.println("URL: " + var);
-		PostMethod method = new PostMethod(var);
+	private static void sendBack(final String data)
+									   throws MalformedURLException,
+									   	      IOException {
+		final HttpClient client = new DefaultHttpClient();
+		client.getParams()
+			  .setParameter(
+					"http.useragent",
+					"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
+
+		if (globalDetailFlag) {
+			logger.info("URL: " + var);
+		}
+
+		final HttpPost method = new HttpPost(var);
 		BufferedReader br = null;
 		StringTokenizer str = new StringTokenizer(data, "#");
-		countInputs += str.countTokens();
+		final HttpParams httpParams = new BasicHttpParams();
 		while (str.hasMoreTokens()) {
 			StringTokenizer strr = new StringTokenizer(str.nextToken(), ",");
 			String attrib = strr.nextToken();
 			String value = strr.nextToken();
-			method.addParameter(attrib, value);
+			httpParams.setParameter(attrib, value);
 		}
+		method.setParams(httpParams);
 
 		try {
-			// System.out.println(method.getResponseHeaders());
-			int returnCode = client.executeMethod(method);
-			if (globalDetailFlag == true)
-				System.out.println("Status: " + method.getStatusCode());
-			arrayBuffer[(method.getStatusCode() / 100) - 1]++;
+			// logger.info(method.getResponseHeaders());
+			final HttpResponse httpResponse = client.execute(method);
+			final StatusLine statusLine = httpResponse.getStatusLine();
+			int returnCode = statusLine.getStatusCode();
+			if (globalDetailFlag)
+				logger.info("Status: " + statusLine.getStatusCode());
+			arrayBuffer[(statusLine.getStatusCode() / 100) - 1]++;
 			if (returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
 				err.println("The Post method is not implemented by this URI");
-				method.getResponseBodyAsString();
+				httpResponse.getEntity().getContent();
 			} else {
-				br = new BufferedReader(new InputStreamReader(method
-						.getResponseBodyAsStream()));
+				br = new BufferedReader(new InputStreamReader(
+						httpResponse.getEntity().getContent()));
 				String readLine;
-				PrintWriter pw = new PrintWriter("temp.html");
-				pw.println("Address: " + var);
-				while (((readLine = br.readLine()) != null)) {
-					pw.println(readLine);
-					pw.flush();
+				PrintWriter pw = null;
+				try {
+					pw = new PrintWriter("temp.html");
+					pw.println("Address: " + var);
+					while (((readLine = br.readLine()) != null)) {
+						pw.println(readLine);
+						pw.flush();
+					}
+				} finally {
+					if (pw != null) {
+						pw.close();
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -144,7 +156,6 @@ class SQLInjection {
 			err.println("IOException occurred. Error: " + ioe.getMessage());
 		}
 		int currentLoop = 0;
-		int currentForm = 0;
 
 		List<StartTag> branches = source.getAllStartTags(HTMLElementName.FORM);
 		countForms = branches.size();
@@ -155,13 +166,13 @@ class SQLInjection {
 		String s = "", data = "";
 		String str = "", pattern = "", temp = "";
 		File dir1 = new File (".");
-		String location = dir1.getCanonicalPath()+"/inject.conf";
+		String location = dir1.getCanonicalPath()+"/src/inject.conf";
 		String[] tempStr = null;
 		dir1 = new File(location);
 		if(!dir1.exists()) {
-			System.out.println("\n\"inject.conf\" file does not exist.");
-			System.out.println("Make sure it exists in the same folder as the runnable jar.");
-			System.out.println("Please retry again");
+			logger.info("\n\"inject.conf\" file does not exist.");
+			logger.info("Make sure it exists in the same folder as the runnable jar.");
+			logger.info("Please retry again");
 			System.exit(0);
 		}
 
@@ -170,7 +181,6 @@ class SQLInjection {
 			if (!s.isEmpty()) {
 				currentLoop++;
 				for (StartTag sj : branches) {
-					currentForm++;
 					attr = sj.getAttributes();
 					data = "";
 					List<StartTag> segments = sj.getElement().getAllStartTags(
@@ -267,24 +277,26 @@ class SQLInjection {
 						}
 						var = rt + '/' + var;
 					}
-					if (globalDetailFlag == true) {
-						out.println("data: " + data);
-						out.println("SQL Injection #: " + currentLoop);
+					if (globalDetailFlag) {
+						logger.info("data: " + data);
+						logger.info("SQL Injection #: " + currentLoop);
 					}
-					if (globalDetailFlag == false)
-						if (flipFlop == false) {
-							out.println(">>");
+					if (!globalDetailFlag)
+						if (!flipFlop) {
+							logger.info(">>");
 							flipFlop = true;
 						} else {
-							out.println("<<");
+							logger.info("<<");
 							flipFlop = false;
 						}
 					sendBack(data);
-					if (globalDetailFlag == true)
-						out
-								.println("########################################################################################################################");
+					if (globalDetailFlag)
+						logger.info("########################################################################################################################");
 				}
 			}
+		}
+		if (br != null) {
+			br.close();
 		}
 	}
 }

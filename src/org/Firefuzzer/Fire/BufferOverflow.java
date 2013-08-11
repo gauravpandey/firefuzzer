@@ -1,8 +1,5 @@
 package org.Firefuzzer.Fire;
 
-import static java.lang.System.out;
-import static java.lang.System.err;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,23 +15,32 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.log4j.Logger;
+
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import net.htmlparser.jericho.StartTag;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-
 class BufferOverflow {
+	public static String globalURL;
+	public static boolean globalDetailFlag = false;
+	public static boolean flipFlop = false;
+
+	private static final Logger logger = Logger.getLogger(BufferOverflow.class);
+
 	private static int countForms = 0;
 	private static int countInputs = 0;
 	private static String var;
 	private static int[] arrayBuffer = new int[5];
-	public static String globalURL;
-	public static boolean globalDetailFlag = false;
-	public static boolean flipFlop = false;
 
 	/**
 	 * Initialize the Array
@@ -49,29 +55,21 @@ class BufferOverflow {
 	 * Showcases the analysis of Buffer Overflow
 	 * */
 	public static void analyzeBufferOverflow() {
-		System.out
-				.println("########################################################################################################################");
-		System.out.println("<---BUFFER OVERFLOW ANALYSIS--->");
-		System.out.println("Total # of Forms: " + countForms);
-		System.out.println("Total # of Input tags: " + countInputs);
-		System.out
-				.println("<<-Categorizing the available data on basis of HTTP Status Codes->>");
-		System.out.println("Informational Codes 1xx Series: " + arrayBuffer[0]);
-		System.out.println("Successful Client Interaction related 2xx Series: "
+		logger.info("########################################################################################################################");
+		logger.info("<---BUFFER OVERFLOW ANALYSIS--->");
+		logger.info("Total # of Forms: " + countForms);
+		logger.info("Total # of Input tags: " + countInputs);
+		logger.info("<<-Categorizing the available data on basis of HTTP Status Codes->>");
+		logger.info("Informational Codes 1xx Series: " + arrayBuffer[0]);
+		logger.info("Successful Client Interaction related 2xx Series: "
 				+ arrayBuffer[1]);
-		System.out.println("Redirection related 3xx Series: " + arrayBuffer[2]);
-		System.out
-				.println("Client Error related 4xx Series: " + arrayBuffer[3]);
-		System.out
-				.println("Server Error related 5xx Series: " + arrayBuffer[4]);
-		System.out
-				.println("########################################################################################################################");
-		System.out
-				.println("########################################################################################################################");
-		out
-				.println("For more Information on HTTP Status Code Series, refer the 'HTTP_STATUS_CODE.pdf' in Document folder.");
-		out
-				.println("########################################################################################################################");
+		logger.info("Redirection related 3xx Series: " + arrayBuffer[2]);
+		logger.info("Client Error related 4xx Series: " + arrayBuffer[3]);
+		logger.info("Server Error related 5xx Series: " + arrayBuffer[4]);
+		logger.info("########################################################################################################################");
+		logger.info("########################################################################################################################");
+		logger.info("For more Information on HTTP Status Code Series, refer the 'HTTP_STATUS_CODE.pdf' in Document folder.");
+		logger.info("########################################################################################################################");
 	}
 
 	/**
@@ -80,53 +78,64 @@ class BufferOverflow {
 	 */
 	private static void sendBack(String data) throws MalformedURLException,
 			IOException {
-		HttpClient client = new HttpClient();
+		final HttpClient client = new DefaultHttpClient();
 		client
 				.getParams()
 				.setParameter(
 						"http.useragent",
 						"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
-		if (globalDetailFlag == true) {
-			out.println("URL: " + var);
-			out.println("Data passed: " + data);
+		if (globalDetailFlag) {
+			logger.info("URL: " + var);
+			logger.info("Data passed: " + data);
 		}
 
-		PostMethod method = new PostMethod(var);
+		final HttpPost method = new HttpPost(var);
 		BufferedReader br = null;
 		StringTokenizer str = new StringTokenizer(data, "#");
-		if (globalDetailFlag == true)
-			out.println("Total # of Input Fields: " + str.countTokens());
+		if (globalDetailFlag)
+			logger.info("Total # of Input Fields: " + str.countTokens());
 		countInputs += str.countTokens();
+		final HttpParams httpParams = new BasicHttpParams();
 		while (str.hasMoreTokens()) {
 			StringTokenizer strr = new StringTokenizer(str.nextToken(), ",");
 			String attrib = strr.nextToken();
 			String value = strr.nextToken();
-			method.addParameter(attrib, value);
+			httpParams.setParameter(attrib, value);
 		}
+		method.setParams(httpParams);
 
 		try {
 
-			int returnCode = client.executeMethod(method);
-			if (globalDetailFlag == true)
-				out.println("Return: " + method.getStatusCode() + " "
-						+ method.getStatusText());
-			arrayBuffer[(method.getStatusCode() / 100) - 1]++;
+			final HttpResponse httpResponse = client.execute(method);
+			final StatusLine statusLine = httpResponse.getStatusLine();
+			final int returnCode = statusLine.getStatusCode();
+			if (globalDetailFlag)
+				logger.info("Return: " + returnCode + " "
+						+ statusLine.getReasonPhrase());
+			arrayBuffer[(returnCode / 100) - 1]++;
 			if (returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
-				err.println("The Post method is not implemented by this URI");
-				method.getResponseBodyAsString();
+				logger.error("The Post method is not implemented by this URI");
+				httpResponse.getEntity().getContent();
 			} else {
-				br = new BufferedReader(new InputStreamReader(method
-						.getResponseBodyAsStream()));
+				br = new BufferedReader(new InputStreamReader(
+						httpResponse.getEntity().getContent()));
 				String readLine;
-				PrintWriter pw = new PrintWriter("temp.html");
-				pw.println("Address: " + var);
-				while (((readLine = br.readLine()) != null)) {
-					pw.println(readLine);
-					pw.flush();
+				PrintWriter pw = null;
+				try {
+					pw = new PrintWriter("temp.html");
+					pw.println("Address: " + var);
+					while (((readLine = br.readLine()) != null)) {
+						pw.println(readLine);
+						pw.flush();
+					}
+				} finally {
+					if (pw != null) {
+						pw.close();
+					}
 				}
 			}
 		} catch (Exception e) {
-			err.println(e);
+			logger.error(e);
 		} finally {
 			// new ProcessBuilder("firefox", "temp.html").start();
 			method.releaseConnection();
@@ -162,16 +171,15 @@ class BufferOverflow {
 		try {
 			source = new Source(new FileReader("page.loaded"));
 		} catch (FileNotFoundException fnfe) {
-			err.println("File not found. Error: " + fnfe.getMessage());
+			logger.error("File not found. Error: " + fnfe.getMessage());
 		} catch (IOException ioe) {
-			err.println("IOException occurred. Error: " + ioe.getMessage());
+			logger.error("IOException occurred. Error: " + ioe.getMessage());
 		}
 		int currentForm = 0;
 
 		List<StartTag> branches = source.getAllStartTags(HTMLElementName.FORM);
 		countForms = branches.size();
-		out
-				.println("########################################################################################################################");
+		logger.info("########################################################################################################################");
 
 		Attributes attr;
 		String data = "";
@@ -250,10 +258,9 @@ class BufferOverflow {
 								+ URLEncoder.encode(random, "UTF-8")
 								+ "#";
 					} catch (UnsupportedEncodingException uee) {
-						err.println("Unsupported error");
+						logger.error("Unsupported error");
 					}
-				} else if (rel.equalsIgnoreCase("radio")
-						&& radioSelect == false) {
+				} else if (rel.equalsIgnoreCase("radio") && radioSelect) {
 					radioSelect = true;
 					str = startTag.toString();
 					if (str.contains("checked")) {
@@ -268,7 +275,7 @@ class BufferOverflow {
 						}
 						strtag = strtag + "value=\"" + randomizer() + "\"/>";
 						temp = strtag;
-						out.println("Line: " + rel + " is checked");
+						logger.info("Line: " + rel + " is checked");
 					} else {
 						pattern = "/>";
 						Pattern p = Pattern.compile(pattern);
@@ -305,7 +312,7 @@ class BufferOverflow {
 								+ URLEncoder.encode("checked", "UTF-8")
 								+ "#";
 					} catch (UnsupportedEncodingException uee) {
-						err.println("Unsupported error");
+						logger.error("Unsupported error");
 					}
 				} else if (rel.equalsIgnoreCase("checkbox")) {
 					str = startTag.toString();
@@ -321,7 +328,7 @@ class BufferOverflow {
 						}
 						strtag = strtag + "value=\"" + randomizer() + "\"/>";
 						temp = strtag;
-						out.println("Line: " + rel + " is checked");
+						logger.info("Line: " + rel + " is checked");
 					} else {
 						pattern = "/>";
 						Pattern p = Pattern.compile(pattern);
@@ -358,7 +365,7 @@ class BufferOverflow {
 								+ URLEncoder.encode("checked", "UTF-8")
 								+ "#";
 					} catch (UnsupportedEncodingException uee) {
-						err.println("Unsupported error");
+						logger.error("Unsupported error");
 					}
 				}
 			}
@@ -384,22 +391,21 @@ class BufferOverflow {
 			}
 			// new ProcessBuilder("C:\\Program Files\\Mozilla Firefox\\firefox",
 			// "temp.html").start();
-			if (globalDetailFlag == true) {
-				out.println("data: " + data);
-				out.println("Form #: " + currentForm);
+			if (globalDetailFlag) {
+				logger.info("data: " + data);
+				logger.info("Form #: " + currentForm);
 			}
-			if (globalDetailFlag == false)
-				if (flipFlop == false) {
-					out.println(">>");
+			if (!globalDetailFlag)
+				if (!flipFlop) {
+					logger.info(">>");
 					flipFlop = true;
 				} else {
-					out.println("<<");
+					logger.info("<<");
 					flipFlop = false;
 				}
 			sendBack(data);
-			if (globalDetailFlag == true)
-				out
-						.println("########################################################################################################################");
+			if (globalDetailFlag)
+				logger.info("########################################################################################################################");
 		}
 	}
 }

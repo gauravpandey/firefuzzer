@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/jericho-html-3.1/jericho-html-3.1/dist/jericho-html-3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-codec-1.4-bin/commons-codec-1.4/commons-codec-1.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-codec-1.4-bin/commons-codec-1.4/commons-codec-1.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-codec-1.4-bin/commons-codec-1.4/commons-codec-1.4-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-1.1.1-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-1.1.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-adapters-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-api-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-logging-1.1.1-bin/commons-logging-1.1.1/commons-logging-tests.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gaurav/Downloads/commons-httpclient-3.1/commons-httpclient-3.1/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/fluent-hc-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpclient-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpclient-cache-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpcore-4.2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpcore-4.3.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpcore-ab-4.3.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpcore-nio-4.3.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/httpmime-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/src/libs/jericho-html-3.3.jar"/>
 	<classpathentry kind="output" path="ClassFiles"/>
 </classpath>
