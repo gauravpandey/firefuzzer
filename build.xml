@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project FireFuzzer with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/pandey/Documents/RandomExperiments/FireFuzzer/build/Firefuzzer.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="org.Firefuzzer.Fire.Firefuzzer"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ guava-14.0.1.jar commons-logging-1.1.1.jar httpclient-4.2.5.jar httpcore-4.3.jar jericho-html-3.3.jar log4j-1.2.17.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/ClassFiles"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/guava" includes="guava-14.0.1.jar"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs" includes="commons-logging-1.1.1.jar"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs" includes="httpclient-4.2.5.jar"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs" includes="httpcore-4.3.jar"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs" includes="jericho-html-3.3.jar"/>
+            <zipfileset dir="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs" includes="log4j-1.2.17.jar"/>
+        </jar>
+    </target>
+</project>
