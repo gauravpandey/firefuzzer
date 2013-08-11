@@ -3,11 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/guava/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/httpclient-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/httpcore-4.3.jar"/>
 	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/jericho-html-3.3.jar"/>
 	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/httpcore-4.3.jar"/>
-	<classpathentry kind="lib" path="/Users/pandey/Documents/RandomExperiments/FireFuzzer/libs/guava/guava-14.0.1.jar"/>
 	<classpathentry kind="output" path="ClassFiles"/>
 </classpath>
