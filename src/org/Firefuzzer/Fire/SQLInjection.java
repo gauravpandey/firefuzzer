@@ -22,13 +22,16 @@ import net.htmlparser.jericho.StartTag;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 /**
  * 
@@ -82,10 +85,9 @@ class SQLInjection {
 									   throws MalformedURLException,
 									   	      IOException {
 		final HttpClient client = new DefaultHttpClient();
-		client.getParams()
-			  .setParameter(
-					"http.useragent",
-					"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10");
+		final List<NameValuePair> pairs = Lists.newArrayList();
+		pairs.add(new BasicNameValuePair("http.useragent",
+				"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.10) Gecko/2009042708 Fedora/3.0.10-1.fc10 Firefox/3.0.10"));
 
 		if (globalDetailFlag) {
 			logger.info("URL: " + var);
@@ -94,14 +96,14 @@ class SQLInjection {
 		final HttpPost method = new HttpPost(var);
 		BufferedReader br = null;
 		StringTokenizer str = new StringTokenizer(data, "#");
-		final HttpParams httpParams = new BasicHttpParams();
+		
 		while (str.hasMoreTokens()) {
 			StringTokenizer strr = new StringTokenizer(str.nextToken(), ",");
 			String attrib = strr.nextToken();
 			String value = strr.nextToken();
-			httpParams.setParameter(attrib, value);
+			pairs.add(new BasicNameValuePair(attrib, value));
 		}
-		method.setParams(httpParams);
+		method.setEntity(new UrlEncodedFormEntity(pairs));
 
 		try {
 			// logger.info(method.getResponseHeaders());

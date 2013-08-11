@@ -34,42 +34,6 @@ public class Firefuzzer {
 	}
 
 	/**
-	 * Fetches HTML source file from a given URL
-	 * */
-	public String getPageContent() throws IOException {
-		Scanner scanner = null;
-
-		try {
-			final URLConnection connection = url.openConnection();
-			scanner = new Scanner(connection.getInputStream());
-			scanner.useDelimiter("\\Z");
-			return scanner.next();
-		} catch (final IOException ex) {
-			logger.info("Cannot open connection to: " + url.toString());
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Logs the incoming HTML source infomation into a file
-	 * */
-	private static void log(Object aObject) {
-		try {
-			FileWriter fww = new FileWriter("page.loaded");
-			fww.close();
-			FileWriter fw = new FileWriter("page.loaded", true);
-			fw.append(aObject.toString());
-			fw.close();
-		} catch (Exception e) {
-			System.err.println("Exception occured: " + e.getMessage());
-		}
-	}
-
-	/**
 	 * Main function of the Project to start either Buffer Overflow or SQL
 	 * Injection Attack on the target URL
 	 * */
@@ -145,6 +109,42 @@ public class Firefuzzer {
 			logger.info("########################################################################################################################");
 			SQLInjection.parseInput();
 			SQLInjection.analyzeSQLInjection();
+		}
+	}
+
+	/**
+	 * Fetches HTML source file from a given URL
+	 **/
+	private String getPageContent() throws IOException {
+		Scanner scanner = null;
+
+		try {
+			final URLConnection connection = url.openConnection();
+			scanner = new Scanner(connection.getInputStream());
+			scanner.useDelimiter("\\Z");
+			return scanner.next();
+		} catch (final IOException ex) {
+			logger.info("Cannot open connection to: " + url.toString());
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Logs the incoming HTML source infomation into a file
+	 * */
+	private static void log(Object aObject) {
+		try {
+			FileWriter fww = new FileWriter("page.loaded");
+			fww.close();
+			FileWriter fw = new FileWriter("page.loaded", true);
+			fw.append(aObject.toString());
+			fw.close();
+		} catch (Exception e) {
+			System.err.println("Exception occured: " + e.getMessage());
 		}
 	}
 }
