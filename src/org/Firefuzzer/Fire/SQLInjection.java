@@ -171,7 +171,7 @@ class SQLInjection {
 		String s = "", data = "";
 		String str = "", pattern = "", temp = "";
 		File dir1 = new File (".");
-		String location = dir1.getCanonicalPath()+"/src/inject.conf";
+		String location = dir1.getCanonicalPath()+"/inject.conf";
 		String[] tempStr = null;
 		dir1 = new File(location);
 		if(!dir1.exists()) {
