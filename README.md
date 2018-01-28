@@ -26,6 +26,8 @@ In the case of Cross-Site Scripting module, Firefuzzer will also target SQL inje
 
 [![YOUTUBE_FIREFUZZER_DEMO](https://img.youtube.com/vi/oh5vcDuL1Lk/0.jpg)](https://www.youtube.com/watch?v=oh5vcDuL1Lk)
 
+FireFuzzer was written in 2009 and I'm planning to rewrite it with advanced features soon using Python.
+
 <hr size="1" noshade=""/>
 
 - SOFTPEDIA "100% FREE" AWARD
