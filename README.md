@@ -24,6 +24,8 @@ In the case of Buffer Overflow module, Firefuzzer creates random, possibly inval
 
 In the case of Cross-Site Scripting module, Firefuzzer will also target SQL injections where SQL commands are injected into the Login form component. Attacker can also effectively insert code and modify SQL command. These commands are then passed to Server end. Again, Look-ups are performed for the status code response and appropriate warnings are issued.
 
+[![YOUTUBE_FIREFUZZER_DEMO](https://img.youtube.com/vi/oh5vcDuL1Lk/0.jpg)](https://www.youtube.com/watch?v=oh5vcDuL1Lk)
+
 <hr size="1" noshade=""/>
 
 - SOFTPEDIA "100% FREE" AWARD
